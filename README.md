@@ -77,7 +77,7 @@ All general params are as close to the MYSQL feeling as it would make sense in a
 
 Here you can apply further conditions to your selection.
 
-Syntax: `column=value` or `column\[operator\]=value`
+Syntax: `column=value` or `column[operator]=value`
 
 The first option is simple and can be used to select entries where the column equals (=) the provided value.
 
@@ -92,11 +92,80 @@ In the second option one can specify exactly the operator which should be used. 
 
 ---
 
+#### GET Row
+
+##### Request
+
+`GET /api/:table/:id`
+
+##### Result
+
+For results and params see at [`GET /api/:table`](#gettable)
+
+---
+
+#### POST
+
+##### Request
+
+`POST /api/:table`
+
+##### Result
+
+This will return the created row like at [`GET /api/:table`](#gettable)
+
+---
+
+#### PUT
+
+##### Request
+
+`PUT /api/:table/:id`
+
+##### Result
+
+This will return the updated row like at [`GET /api/:table`](#gettable)
+
+---
+
+#### DELETE
+
+##### Request
+
+`DELETE /api/:table/:id`
+
+##### Result
+
+This will return the deleted id. Whereby the id is the first primary key of the table. Example:
+
+```json
+{
+    "result": "success",
+    "json": {
+        "deletedID": "1"
+    },
+    "table": "test"
+}
+```
+
 ## Config
 
 This line inits the api. You can provide a config object to adjust the settings to your need by adding an options object:
 
 `mysqltorest(app,connection,options);`
+
+If not specified, the following options will be used:
+
+```js
+var default_options = {
+    uploadDestination:__dirname + '/uploads',
+    allowOrigin:'*',
+    maxFileSize:-1,
+    apiURL:'/api',
+    paramPrefix:'_'
+};
+```
+
 
 The options consist of the following:
 
@@ -122,8 +191,6 @@ Here the url to the api is specified. Default is `/api`.
 
 This is the query prefix for not select querys like order or limit.
 
----
-
 ### Functions
 
 Currently there is only one API call:
@@ -143,3 +210,13 @@ api.setAuth(function(req,res,next) {
     }
 });
 ```
+
+
+## MySQL Config
+
+To make the setup as easy as possible mysql-to-rest reads almost all config directly form the database. This has two "pitfalls":
+
+* `NOT NULL` Columns are seen as required. Even if they have a default value.
+* If you want to upload a file. You have to do the following steps:
+    * Create a varchar or text column.
+    * Set the default value to `FILE`.
