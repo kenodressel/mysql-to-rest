@@ -61,7 +61,7 @@ Once the app is up and running you have the following options:
 
 You can further specify your Requests with GET params. As an example:
 
-`GET /api/:table?_limit=0,10&_order[id]=DESC&id[GREATER]=4`
+`GET /api/:table?_limit=0,10&_order[id]=DESC&id[GREAT]=4`
 
 ##### General params
 
@@ -100,7 +100,7 @@ In the second option one can specify exactly the operator which should be used. 
 
 ##### Result
 
-For results and params see at [`GET /api/:table`](#gettable)
+For results and params see at [`GET /api/:table`](#get-table)
 
 ---
 
@@ -112,7 +112,7 @@ For results and params see at [`GET /api/:table`](#gettable)
 
 ##### Result
 
-This will return the created row like at [`GET /api/:table`](#gettable)
+This will return the created row like at [`GET /api/:table`](#get-table)
 
 ---
 
@@ -124,7 +124,7 @@ This will return the created row like at [`GET /api/:table`](#gettable)
 
 ##### Result
 
-This will return the updated row like at [`GET /api/:table`](#gettable)
+This will return the updated row like at [`GET /api/:table`](#get-table)
 
 ---
 
