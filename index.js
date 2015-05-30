@@ -17,7 +17,7 @@ module.exports = function(app,connection,options) {
     options.apiURL = options.apiURL || '/api';                                          //Url Prefix for API
     options.paramPrefix = options.paramPrefix || '_';                                   //Prefix for special params (eg. order or fields).
 
-    app.use(bodyParser.urlencoded() );
+    app.use(bodyParser.urlencoded({ extended: false }) );
     app.use(multer({dest: options.uploadDestination }));
 
     //==============================================================================
