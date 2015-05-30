@@ -1,0 +1,30 @@
+{
+  "name": "mysql-to-rest",
+  "version": "1.0.0",
+  "description": "This module maps an MYSQL DB to an REST API interface.",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.12.4",
+    "multer": "^0.1.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ardobras/mysql-to-rest.git"
+  },
+  "keywords": [
+    "mysql",
+    "rest",
+    "api"
+  ],
+  "author": "Keno Dressel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ardobras/mysql-to-rest/issues"
+  },
+  "homepage": "https://github.com/Ardobras/mysql-to-rest"
+}
