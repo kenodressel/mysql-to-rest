@@ -103,7 +103,7 @@ module.exports = function(connection_,settings_) {
 
                                     for (var selector in req.query[q]) {
                                         if (req.query[q].hasOwnProperty(selector)) {
-                                            var op;
+                                            var op,pre = '',post = '';
                                             //MYSQLify the operator
                                             switch (selector.toUpperCase()) {
                                                 case 'GREAT':
@@ -120,9 +120,13 @@ module.exports = function(connection_,settings_) {
                                                     break;
                                                 case 'IN':
                                                     op = 'IN';
+                                                    pre = '(';
+                                                    post = ')';
                                                     break;
                                                 case 'LIKE':
                                                     op = 'LIKE';
+                                                    pre = "'";
+                                                    post = "'";
                                                     break;
                                                 case 'EQ':
                                                     op = '=';
@@ -131,7 +135,7 @@ module.exports = function(connection_,settings_) {
                                                     op = '=';
                                                     break;
                                             }
-                                            whereArr.push(q + ' ' + op + ' ' + escape(req.query[q][selector]));
+                                            whereArr.push(q + ' ' + op + ' ' + pre + escape(req.query[q][selector]) + post);
                                         }
                                     }
 
@@ -535,9 +539,10 @@ function escape (str) {
             case "\"":
             case "'":
             case "\\":
-            case "%":
                 return "\\"+char; // prepends a backslash to backslash, percent,
                                   // and double/single quotes
+            case "%":
+                return "%";
         }
     });
 }
