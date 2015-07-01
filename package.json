@@ -1,6 +1,6 @@
 {
   "name": "mysql-to-rest",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "This module maps an MYSQL DB to an REST API interface.",
   "main": "index.js",
   "dependencies": {
@@ -21,10 +21,34 @@
     "rest",
     "api"
   ],
-  "author": "Keno Dressel",
+  "author": {
+    "name": "Keno Dressel"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ardobras/mysql-to-rest/issues"
   },
-  "homepage": "https://github.com/Ardobras/mysql-to-rest"
+  "homepage": "https://github.com/Ardobras/mysql-to-rest",
+  "gitHead": "ad804d288a00aed6b1cd342934b497f4fb62f278",
+  "_id": "mysql-to-rest@1.0.1",
+  "_shasum": "34d9d21848606110bbcc5e4337b469166c397d87",
+  "_from": "mysql-to-rest@",
+  "_npmVersion": "1.4.21",
+  "_npmUser": {
+    "name": "ardobras",
+    "email": "ardobras@googlemail.com"
+  },
+  "maintainers": [
+    {
+      "name": "ardobras",
+      "email": "ardobras@googlemail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "34d9d21848606110bbcc5e4337b469166c397d87",
+    "tarball": "http://registry.npmjs.org/mysql-to-rest/-/mysql-to-rest-1.0.1.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/mysql-to-rest/-/mysql-to-rest-1.0.1.tgz",
+  "readme": "ERROR: No README data found!"
 }
