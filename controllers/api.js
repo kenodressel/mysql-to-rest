@@ -452,7 +452,19 @@ module.exports = function(connection_,settings_) {
  */
 
 function sendSuccessAnswer(table, res, id, field) {
-    if(typeof field === "undefined") field = "id";
+    if(typeof field === "undefined") {
+        if(id === 0) {
+            //Just assume that everything went okay. It looks like a non numeric primary key.
+            res.send({
+                result: 'success',
+                json: rows,
+                table: table
+            });
+            return;
+        } else {
+            field = "id";
+        }
+    }
     connection.query('SELECT * FROM ?? WHERE ?? = ?',[table,field,id] , function(err, rows) {
         if (err) {
             console.error(err);
