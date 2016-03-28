@@ -1,6 +1,6 @@
 {
   "name": "mysql-to-rest",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "This module maps an MYSQL DB to an REST API interface.",
   "main": "index.js",
   "dependencies": {
