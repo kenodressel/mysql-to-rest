@@ -457,7 +457,6 @@ function sendSuccessAnswer(table, res, id, field) {
             //Just assume that everything went okay. It looks like a non numeric primary key.
             res.send({
                 result: 'success',
-                json: rows,
                 table: table
             });
             return;
