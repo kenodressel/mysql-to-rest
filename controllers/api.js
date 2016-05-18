@@ -232,7 +232,10 @@ module.exports = function(connection_,settings_) {
                     var field = dbField.Field;
 
                     //Check required fields
-                    if(dbField.Null === 'NO' && dbField.Extra !== 'auto_increment') {
+                    if (dbField.Null === 'NO' && 
+                        dbField.Default === '' && 
+                        dbField.Extra !== 'auto_increment' && 
+                        dbField.Extra.search('on update')===-1) {
 
                         //Check if field not set
                         if (undefOrEmpty(req.body[field])) {
