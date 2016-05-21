@@ -1,4 +1,8 @@
-var connection,settings;
+var connection,
+    settings,
+    lastQry,
+    mysql = require('mysql');
+;
 
 module.exports = function(connection_,settings_) {
 
@@ -22,7 +26,7 @@ module.exports = function(connection_,settings_) {
             req.params.table = escape(req.params.table);
 
             //Get all fields from table
-            connection.query('SHOW COLUMNS FROM ??', req.params.table, function (err, rows) {
+            lastQry = connection.query('SHOW COLUMNS FROM ??', req.params.table, function (err, rows) {
                 if (err) return sendError(res, err.code);
 
 
@@ -97,45 +101,44 @@ module.exports = function(connection_,settings_) {
 
                                 if (typeof req.query[q] === "string") {
                                     //If it is a simple string, the api assumes = as the operator
-                                    whereArr.push(q + ' = ' + escape(req.query[q]));
+                                    whereArr.push(mysql.format('?? = ?', [q, escape(req.query[q])]));
 
                                 } else if (typeof req.query[q] === "object") {
 
                                     for (var selector in req.query[q]) {
                                         if (req.query[q].hasOwnProperty(selector)) {
-                                            var op,pre = '',post = '';
+                                            var op, val = connection.escape(escape(req.query[q][selector]));
                                             //MYSQLify the operator
                                             switch (selector.toUpperCase()) {
                                                 case 'GREAT':
-                                                    op = ">";
+                                                    op = "> ";
                                                     break;
                                                 case 'SMALL':
-                                                    op = "<";
+                                                    op = "< ";
                                                     break;
                                                 case 'EQGREAT':
-                                                    op = '>=';
+                                                    op = '>= ';
                                                     break;
                                                 case 'EQSMALL':
-                                                    op = '<=';
+                                                    op = '<= ';
                                                     break;
                                                 case 'IN':
-                                                    op = 'IN';
-                                                    pre = '(';
-                                                    post = ')';
+                                                    op = 'IN (';
+                                                    val = escape(req.query[q][selector]).split(',').map(function (item) {
+                                                        return connection.escape(item);
+                                                    }).join(',') + ')';
                                                     break;
                                                 case 'LIKE':
-                                                    op = 'LIKE';
-                                                    pre = "'";
-                                                    post = "'";
+                                                    op = 'LIKE ';                                            
                                                     break;
                                                 case 'EQ':
-                                                    op = '=';
+                                                    op = '= ';
                                                     break;
                                                 default:
-                                                    op = '=';
+                                                    op = '= ';
                                                     break;
                                             }
-                                            whereArr.push(q + ' ' + op + ' ' + pre + escape(req.query[q][selector]) + post);
+                                            whereArr.push(mysql.format('?? ' + op + val, [q]));
                                         }
                                     }
 
@@ -162,7 +165,7 @@ module.exports = function(connection_,settings_) {
                 where = where ? 'WHERE ' + where : '';
 
                 //Fire query
-                connection.query("SELECT " + fields + " FROM ?? " + where + " " + order + " " + limit, [req.params.table], function (err, rows) {
+                lastQry = connection.query("SELECT " + fields + " FROM ?? " + where + " " + order + " " + limit, [req.params.table], function (err, rows) {
                     if (err) return sendError(res, err.code);
                     if (rows.length > 0) {
                         res.send({
@@ -186,12 +189,12 @@ module.exports = function(connection_,settings_) {
             req.params.table = escape(req.params.table);
 
             //Request DB structure
-            connection.query('SHOW COLUMNS FROM ??', req.params.table, function (err, columns) {
+            lastQry = connection.query('SHOW COLUMNS FROM ??', req.params.table, function (err, columns) {
 
                 //Get primary key of table if not specified via query
                 var field = findPrim(columns, req.query[settings.paramPrefix + 'field']);
 
-                connection.query('SELECT * FROM ?? WHERE ??.?? IN (' + req.params.id + ')', [req.params.table, req.params.table, field], function (err, rows) {
+                lastQry = connection.query('SELECT * FROM ?? WHERE ??.?? IN (' + req.params.id + ')', [req.params.table, req.params.table, field], function (err, rows) {
                     if (err) return sendError(res, err.code);
                     res.send({
                         result: 'success',
@@ -213,7 +216,7 @@ module.exports = function(connection_,settings_) {
             var insertJson = {};
 
             //Request DB structure
-            connection.query('SHOW COLUMNS FROM ??', req.params.table , function(err, columns) {
+            lastQry = connection.query('SHOW COLUMNS FROM ??', req.params.table , function (err, columns) {
                 if (err) return sendError(res,err.code);
 
                 var value;
@@ -229,7 +232,10 @@ module.exports = function(connection_,settings_) {
                     var field = dbField.Field;
 
                     //Check required fields
-                    if(dbField.Null === 'NO' && dbField.Extra !== 'auto_increment') {
+                    if (dbField.Null === 'NO' && 
+                        dbField.Default === '' && 
+                        dbField.Extra !== 'auto_increment' && 
+                        dbField.Extra.search('on update')===-1) {
 
                         //Check if field not set
                         if (undefOrEmpty(req.body[field])) {
@@ -293,7 +299,7 @@ module.exports = function(connection_,settings_) {
                  * When the loop is finished write everything in the database
                  */
                 function insertIntoDB() {
-                    connection.query('INSERT INTO ?? SET ?',[req.params.table ,insertJson] , function (err,rows) {
+                    lastQry = connection.query('INSERT INTO ?? SET ?', [req.params.table , insertJson] , function (err, rows) {
                         if (err) {
                             console.error(err);
                             res.statusCode = 500;
@@ -319,7 +325,7 @@ module.exports = function(connection_,settings_) {
             var updateSelector = {};
 
             //Request database structure
-            connection.query('SHOW COLUMNS FROM ??', req.params.table , function(err, columns) {
+            lastQry = connection.query('SHOW COLUMNS FROM ??', req.params.table , function (err, columns) {
                 if (err) return sendError(res,err.code);
 
                 //Check if the request is provided an select value
@@ -403,7 +409,7 @@ module.exports = function(connection_,settings_) {
 
                 function updateIntoDB() {
                     //Yaaay, alle Tests bestanden gogo, insert!
-                    connection.query('UPDATE ?? SET ? WHERE ?? = ?',[req.params.table ,updateJson, updateSelector.field, updateSelector.value] , function (err) {
+                    lastQry = connection.query('UPDATE ?? SET ? WHERE ?? = ?', [req.params.table , updateJson, updateSelector.field, updateSelector.value] , function (err) {
                         if (err) return sendError(res,err.code);
                         sendSuccessAnswer(req.params.table , res, req.params.id);
 
@@ -415,7 +421,7 @@ module.exports = function(connection_,settings_) {
 
             var deleteSelector = {};
 
-            connection.query('SHOW COLUMNS FROM ??', req.params.table , function(err, columns) {
+            lastQry = connection.query('SHOW COLUMNS FROM ??', req.params.table , function (err, columns) {
                 if (err) return sendError(res,err.code);
 
                 //Check if selector is sent
@@ -426,7 +432,7 @@ module.exports = function(connection_,settings_) {
                     deleteSelector.value = req.params.id;
                 }
 
-                connection.query('DELETE FROM ?? WHERE ?? = ?', [req.params.table, deleteSelector.field, deleteSelector.value] , function(err, rows) {
+                lastQry = connection.query('DELETE FROM ?? WHERE ?? = ?', [req.params.table, deleteSelector.field, deleteSelector.value] , function (err, rows) {
                     if (err) return sendError(res,err.code);
 
                     if(rows.affectedRows > 0) {
@@ -464,14 +470,9 @@ function sendSuccessAnswer(table, res, id, field) {
             field = "id";
         }
     }
-    connection.query('SELECT * FROM ?? WHERE ?? = ?',[table,field,id] , function(err, rows) {
+    lastQry = connection.query('SELECT * FROM ?? WHERE ?? = ?', [table, field, id] , function (err, rows) {
         if (err) {
-            console.error(err);
-            res.statusCode = 500;
-            res.send({
-                result: 'error',
-                err:    err.code
-            });
+            sendError(res, err.code)
         } else {
             res.send({
                 result: 'success',
@@ -595,6 +596,8 @@ function checkIfFieldsExist(fieldStr,rows) {
 
 function sendError(res,err) {
     console.error(err);
+    // also log last executed query, for easier debugging
+    console.error(lastQry.sql);
     res.statusCode = 500;
     res.send({
         result: 'error',
