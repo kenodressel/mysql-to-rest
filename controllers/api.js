@@ -519,7 +519,7 @@ function checkIfSentvaluesAreSufficient(req,dbField) {
         }
         //Normle Werte
         if((dbField.Type.indexOf("int") != -1 || dbField.Type.indexOf("float") != -1 || dbField.Type.indexOf("double") != -1 )) {
-            return !isNaN(req.body[dbField.Field]);
+            return !isNaN(req.body[dbField.Field]) ? req.body[dbField.Field] : false;
         } else if(typeof req.body[dbField.Field] === 'string') {
             return escape(req.body[dbField.Field]);
         }
