@@ -167,15 +167,12 @@ module.exports = function(connection_,settings_) {
                 //Fire query
                 lastQry = connection.query("SELECT " + fields + " FROM ?? " + where + " " + order + " " + limit, [req.params.table], function (err, rows) {
                     if (err) return sendError(res, err.code);
-                    if (rows.length > 0) {
-                        res.send({
-                            result: 'success',
-                            json: rows,
-                            table: req.params.table,
-                            length: rows.length
-                        });
-                    } else return sendError(res, 'No Row found.')
-
+                    res.send({
+                        result: 'success',
+                        json: rows,
+                        table: req.params.table,
+                        length: rows.length
+                    });
                 });
             });
         },
