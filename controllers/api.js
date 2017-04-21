@@ -514,9 +514,12 @@ function checkIfSentvaluesAreSufficient(req,dbField) {
             return false;
         }
     } else {
+        if (req.body[dbField.Field] === null || typeof req.body[dbField.Field] == "undefined") {
+            return dbField.Null == "YES" ? null : false;
+        }
         //Normle Werte
-        if((dbField.Type.indexOf("int") != -1 || dbField.Type.indexOf("float") != -1 || dbField.Type.indexOf("double") != -1 )&& isNaN(req.body[dbField.Field])) {
-            return false;
+        if((dbField.Type.indexOf("int") != -1 || dbField.Type.indexOf("float") != -1 || dbField.Type.indexOf("double") != -1 )) {
+            return !isNaN(req.body[dbField.Field]);
         } else if(typeof req.body[dbField.Field] === 'string') {
             return escape(req.body[dbField.Field]);
         }
