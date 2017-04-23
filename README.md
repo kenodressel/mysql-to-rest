@@ -223,4 +223,5 @@ To make the setup as easy as possible mysql-to-rest reads almost all config dire
 
 ## Docker
 
+A full version can be deployed using docker. (Thanks to @reduardo7)
 https://hub.docker.com/r/reduardo7/db-to-api/
