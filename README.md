@@ -19,7 +19,7 @@ var mysqltorest  = require('mysql-to-rest');
 var app = express();
 ```
 
-Then open your DB connection. Find more [here](https://github.com/felixge/node-mysql/#introduction)
+Then open your DB connection. Find more [here](https://github.com/felixge/node-mysql/#introduction). (You can also use `mysql.createPool()` to create a pool of connections and pass that to `mysql-to-rest`.)
 
 When all dependencies are up and ready, init the API like this:
 
