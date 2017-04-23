@@ -220,3 +220,7 @@ To make the setup as easy as possible mysql-to-rest reads almost all config dire
 * If you want to upload a file. You have to do the following steps:
     * Create a varchar or text column.
     * Set the default value to `FILE`.
+
+## Docker
+
+https://hub.docker.com/r/reduardo7/db-to-api/
