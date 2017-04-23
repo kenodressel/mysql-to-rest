@@ -167,15 +167,12 @@ module.exports = function(connection_,settings_) {
                 //Fire query
                 lastQry = connection.query("SELECT " + fields + " FROM ?? " + where + " " + order + " " + limit, [req.params.table], function (err, rows) {
                     if (err) return sendError(res, err.code);
-                    if (rows.length > 0) {
-                        res.send({
-                            result: 'success',
-                            json: rows,
-                            table: req.params.table,
-                            length: rows.length
-                        });
-                    } else return sendError(res, 'No Row found.')
-
+                    res.send({
+                        result: 'success',
+                        json: rows,
+                        table: req.params.table,
+                        length: rows.length
+                    });
                 });
             });
         },
@@ -517,9 +514,12 @@ function checkIfSentvaluesAreSufficient(req,dbField) {
             return false;
         }
     } else {
+        if (req.body[dbField.Field] === null || typeof req.body[dbField.Field] == "undefined") {
+            return dbField.Null == "YES" ? null : false;
+        }
         //Normle Werte
-        if((dbField.Type.indexOf("int") != -1 || dbField.Type.indexOf("float") != -1 || dbField.Type.indexOf("double") != -1 )&& isNaN(req.body[dbField.Field])) {
-            return false;
+        if((dbField.Type.indexOf("int") != -1 || dbField.Type.indexOf("float") != -1 || dbField.Type.indexOf("double") != -1 )) {
+            return !isNaN(req.body[dbField.Field]) ? req.body[dbField.Field] : false;
         } else if(typeof req.body[dbField.Field] === 'string') {
             return escape(req.body[dbField.Field]);
         }
