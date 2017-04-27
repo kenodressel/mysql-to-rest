@@ -408,7 +408,7 @@ module.exports = function(connection_,settings_) {
                     //Yaaay, alle Tests bestanden gogo, insert!
                     lastQry = connection.query('UPDATE ?? SET ? WHERE ?? = ?', [req.params.table , updateJson, updateSelector.field, updateSelector.value] , function (err) {
                         if (err) return sendError(res,err.code);
-                        sendSuccessAnswer(req.params.table , res, req.params.id);
+                        sendSuccessAnswer(req.params.table , res, req.params.id, updateSelector.field);
 
                     });
                 }
